@@ -6,7 +6,7 @@ venv/
 .env
 
 # Ingestion outputs
-data/
+data/*
 storage/
 hf_space/
 render_repo/
@@ -19,3 +19,8 @@ render_repo/
 # Keep the DB schema and fixtures under version control
 !bihar_ingestion/db/*.sql
 !tests/fixtures/**
+!data/bihar_web.db
+!data/geo/
+!data/geo/**
+!data/graph/
+!data/graph/**
