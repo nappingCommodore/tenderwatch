@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ title }}{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>{{ title }}</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>{{ title }}</h1>
+  <div class="sub">Ranked by trusted award value. Select one to open its full profile, flags and network.</div></div>
+
+<form class="mt16 search" method="get" action="/{{ title|lower }}" style="max-width:420px">
+  <span class="ic">{{ m.icon('search') }}</span>
+  <input class="input" type="text" name="q" value="{{ q }}" placeholder="{{ placeholder }}">
+</form>
+
+<div class="table-wrap mt16">
+  <table class="tbl"><thead><tr>
+    <th>{{ title[:-1] if title.endswith('s') else title }}</th>
+    <th class="r">Trusted value</th><th class="r">{{ cols[0] }}</th><th class="r">{{ cols[1] }}</th>
+  </tr></thead><tbody>
+    {% for r in rows %}<tr>
+      <td><a href="/{{ kind }}/{{ r.id }}">{{ r.primary_name }}</a></td>
+      <td class="r">{{ r.value|rupees }}</td>
+      <td class="r">{{ r.n1|num }}</td>
+      <td class="r">{{ r.n2|num }}</td>
+    </tr>{% else %}<tr><td colspan="4" class="empty">No matches.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}

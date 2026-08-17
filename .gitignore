@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Ingestion outputs
+data/
+storage/
+hf_space/
+render_repo/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.log
+
+# Keep the DB schema and fixtures under version control
+!bihar_ingestion/db/*.sql
+!tests/fixtures/**

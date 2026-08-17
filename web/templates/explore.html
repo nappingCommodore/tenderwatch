@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Data Explorer{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>Data Explorer</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>Data explorer</h1>
+  <div class="sub">Filter the full tender register, then sort, search and export. Every row links to its
+    full case file.</div></div>
+
+<form class="card toolbar mt16" method="get" action="/explore">
+  <div class="field" style="min-width:220px"><label class="fld">Text / ref / ID</label>
+    <input class="input" name="text" value="{{ f.text }}" placeholder="description, ref, or Tender/RFQ ID"></div>
+  <div class="field"><label class="fld">Department</label><input class="input" name="dept" value="{{ f.dept }}"></div>
+  <div class="field"><label class="fld">District</label>
+    <select name="district"><option value="">All districts</option>
+      <option value="__none__" {{ 'selected' if f.district=='__none__' }}>— Unmapped / statewide —</option>
+      {% for d in districts %}<option value="{{ d }}" {{ 'selected' if f.district==d }}>{{ d }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label class="fld">Status</label>
+    <select name="status"><option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if f.status==s }}>{{ s|capitalize }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label class="fld">Awarded vendor</label><input class="input" name="vendor" value="{{ f.vendor }}"></div>
+  <div class="field"><label class="fld">Category</label><input class="input" name="category" value="{{ f.category }}"></div>
+  <div class="field"><label class="fld">Min est (Cr)</label>
+    <input class="input" type="number" step="1" min="0" name="min_est" value="{{ f.min_est }}" style="width:96px"></div>
+  <div class="field"><label class="fld">Sort</label>
+    <select name="sort">{% for s in sorts %}<option value="{{ s }}" {{ 'selected' if f.sort==s }}>{{ s }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="fld">Rows</label>
+    <select name="limit">{% for n in [100,300,500,1000] %}<option value="{{ n }}" {{ 'selected' if f.limit==n }}>{{ n }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="fld">Flagged</label>
+    <select name="only_flagged"><option value="0" {{ 'selected' if not f.only_flagged }}>All</option>
+      <option value="1" {{ 'selected' if f.only_flagged }}>Only flagged</option></select></div>
+  <div class="field"><label class="fld">&nbsp;</label><button class="btn primary" type="submit">Apply</button></div>
+</form>
+
+<div class="spread mt16">
+  <span class="muted"><b>{{ rows|length }}</b> tenders</span>
+  <a class="btn" href="/export.csv?{{ export_qs }}">Export CSV ↓</a>
+</div>
+
+<div class="card pad-0 mt8"><div id="grid" style="padding:6px"></div></div>
+
+<script type="application/json" id="d-rows">{{ rows|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const rows = JSON.parse(document.getElementById('d-rows').textContent);
+const g = gridjs;
+new g.Grid({
+  data: rows.map(r => [r.org_id || r.tender_id, r.description || '', r.department || '', r.category || '',
+                       r.status || '', r.est_cr || 0, r.award_cr || 0, r.vendor || '', r.published || '',
+                       r.flags || 0, r.tender_id]),
+  columns: [
+    { name: 'Tender/RFQ ID', width: '110px',
+      formatter: (c, row) => g.html(`<a href="/case/${encodeURIComponent(row.cells[0].data)}" style="color:var(--info)">${c}</a>`) },
+    { name: 'Description', width: '26%' },
+    { name: 'Department' },
+    { name: 'Category', width: '120px' },
+    { name: 'Status', width: '104px' },
+    { name: 'Est ₹Cr', width: '90px' },
+    { name: 'Award ₹Cr', width: '96px' },
+    { name: 'Vendor' },
+    { name: 'Published', width: '110px' },
+    { name: 'Flags', width: '78px' },
+    { name: 'tid', hidden: true },
+    { name: '', width: '86px', sort: false,
+      formatter: (_, row) => {
+        const tid = row.cells[10].data;
+        const org = row.cells[0].data;
+        const desc = String(row.cells[1].data || '').replace(/[&<>"]/g,
+          ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+        return g.html('<form class="add-form" method="post" action="/casebook/add">'
+          + '<input type="hidden" name="kind" value="tender">'
+          + '<input type="hidden" name="ref_id" value="' + tid + '">'
+          + '<input type="hidden" name="label" value="T' + org + ' \u2014 ' + desc + '">'
+          + '<button type="submit" class="btn-add">+ Case</button></form>');
+      } },
+  ],
+  search: true, sort: true, resizable: true,
+  pagination: { limit: 25 },
+  className: { table: 'tbl' },
+  style: { th: { 'background': 'var(--panel-2)' } },
+}).render(document.getElementById('grid'));
+</script>
+{% endblock %}

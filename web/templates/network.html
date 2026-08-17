@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Network{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>Network</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>Network &amp; related parties</h1>
+  <div class="sub">Distinct vendor records that share a PAN or GSTIN — often the same or a related entity.
+    Joint wins in one department can indicate award-splitting under one identity.</div></div>
+
+<div class="kpis mt16" style="grid-template-columns:repeat(3,1fr)">
+  {{ m.kpi(n_pairs|num, "Related-party pairs", True) }}
+  {{ m.kpi(n_clusters|num, "Clusters") }}
+  {{ m.kpi(shared_depts|num, "Shared departments (selected)") }}
+</div>
+
+<div class="grid section" style="grid-template-columns:1fr 1.2fr">
+  <div class="card pad-0">
+    <div style="padding:14px 16px 0"><h2 style="font-size:15px">Clusters</h2></div>
+    <div class="table-wrap" style="max-height:520px;border:none">
+      <table class="tbl mt8"><thead><tr><th class="r">#</th><th class="r">Vendors</th><th>Members</th></tr></thead><tbody>
+        {% for r in rows %}<tr style="{{ 'background:var(--accent-dim)' if r.cluster==sel }}">
+          <td class="r"><a href="/network?cluster={{ r.cluster }}">{{ r.cluster }}</a></td>
+          <td class="r">{{ r.vendors }}</td>
+          <td class="muted" style="max-width:340px">{{ r.names }}</td>
+        </tr>{% else %}<tr><td colspan="3" class="empty">No related-party pairs found.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+
+  <div>
+    {% if detail %}
+    <div class="card">
+      <div class="spread"><h2 style="font-size:15px">Cluster {{ sel }}</h2>
+        <span class="tag">Combined {{ combined|rupees }}</span></div>
+      {% if shared_depts %}<div class="warnbox mt8">⚠ These vendors jointly won in {{ shared_depts }}
+        department(s) — possible award-splitting under one identity.</div>{% endif %}
+      <div class="table-wrap mt8" style="max-height:220px">
+        <table class="tbl"><thead><tr><th>Vendor</th><th class="mono">PAN</th><th class="r">Value</th><th class="r">Awards</th></tr></thead><tbody>
+          {% for d in detail %}<tr>
+            <td><a href="/vendor/{{ d.id }}">{{ d.name }}</a></td>
+            <td class="mono muted">{{ d.pan or "—" }}</td>
+            <td class="r">{{ d.total_value|rupees }}</td>
+            <td class="r">{{ d.awards|num }}</td>
+          </tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card mt16"><h2 style="font-size:15px">Cluster graph</h2><div id="ego" class="chart"></div></div>
+    {% else %}<div class="card empty">Select a cluster to inspect its members and links.</div>{% endif %}
+  </div>
+</div>
+
+{% if graph %}<script type="application/json" id="d-graph">{{ graph|tojson }}</script>{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>{% if graph %}Charts.graph('ego', Charts.readJSON('d-graph'));{% endif %}</script>
+{% endblock %}

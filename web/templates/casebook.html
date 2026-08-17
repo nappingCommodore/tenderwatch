@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ case.title }}{% endblock %}
+{% block crumbs %}<a href="/casebook">Casebook</a> · <b>{{ case.title|truncate(40) }}</b>{% endblock %}
+{% block content %}
+{% if added %}<div class="warnbox mt0" style="background:rgba(70,185,138,.1);border-color:rgba(70,185,138,.4);color:#b6f0d4">Added to case.</div>{% endif %}
+
+<div class="page-h mt16">
+  <div class="kicker">Case file</div>
+  <div class="spread">
+    <h1>{{ case.title }}
+      {% if case.status == 'complete' %}<span class="pill confirmed" style="vertical-align:middle">complete</span>
+      {% else %}<span class="pill open" style="vertical-align:middle">open</span>{% endif %}</h1>
+  </div>
+  {% if case.summary %}<div class="sub">{{ case.summary }}</div>{% endif %}
+  <div class="tag mt8">Created {{ (case.created_at or '')|string|truncate(16, True, '') }} ·
+    updated {{ (case.updated_at or '')|string|truncate(16, True, '') }} · {{ case.n_items }} items</div>
+</div>
+
+<div class="row mt16" style="gap:8px">
+  {% if active_case and active_case.case_id == case.case_id %}
+    <span class="pill open">active case</span>
+  {% else %}
+    <form method="post" action="/casebook/{{ case.case_id }}/activate" style="display:inline">
+      <button class="btn" type="submit">Make active</button></form>
+  {% endif %}
+  <a class="btn" href="/casebook/{{ case.case_id }}/export.md">Export Markdown ↓</a>
+  <a class="btn" href="/casebook/{{ case.case_id }}/export.json">Export JSON ↓</a>
+  <a class="btn" href="/casebook/{{ case.case_id }}/print" target="_blank">Print / PDF ↗</a>
+  <form method="post" action="/casebook/{{ case.case_id }}/status" style="display:inline">
+    <input type="hidden" name="status" value="{{ 'open' if case.status == 'complete' else 'complete' }}">
+    <button class="btn {{ '' if case.status == 'complete' else 'primary' }}" type="submit">
+      {{ 'Reopen' if case.status == 'complete' else 'Mark complete' }}</button></form>
+  <div class="grow" style="flex:1"></div>
+  <form method="post" action="/casebook/{{ case.case_id }}/delete" style="display:inline"
+        onsubmit="return confirm('Delete this whole case? This cannot be undone.')">
+    <button class="btn ghost" type="submit" style="color:var(--bad)">Delete</button></form>
+</div>
+
+<details class="card mt16"><summary class="muted" style="cursor:pointer;font-size:13px">Edit title / summary</summary>
+  <form method="post" action="/casebook/{{ case.case_id }}/meta" class="mt8">
+    <div class="field"><label class="fld">Title</label><input class="input" name="title" value="{{ case.title }}"></div>
+    <div class="field"><label class="fld">Summary</label><textarea name="summary" rows="3">{{ case.summary or '' }}</textarea></div>
+    <button class="btn primary" type="submit">Save</button>
+  </form>
+</details>
+
+{% for kind, heading in headings %}
+{% set group = case['items']|selectattr('kind','equalto',kind)|list %}
+{% if group %}
+<div class="section">
+  {{ m.section_head("", heading ~ " (" ~ group|length ~ ")") }}
+  {% for it in group %}
+  <div class="card mt8">
+    <div class="spread">
+      <div style="min-width:0">
+        {% if it.href %}<a href="{{ it.href }}"><b>{{ it.label }}</b></a>{% else %}<b>{{ it.label }}</b>{% endif %}
+        {% if kind != 'note' %}<div class="muted mt8" style="font-size:12.5px">{{ it.detail }}</div>{% endif %}
+      </div>
+      <div class="row" style="gap:6px">
+        <form method="post" action="/casebook/{{ case.case_id }}/item/{{ it.item_id }}/move" style="display:inline">
+          <input type="hidden" name="dir" value="up">
+          <button class="btn-add" type="submit" title="Move up"{{ ' disabled' if loop.first else '' }}>↑</button></form>
+        <form method="post" action="/casebook/{{ case.case_id }}/item/{{ it.item_id }}/move" style="display:inline">
+          <input type="hidden" name="dir" value="down">
+          <button class="btn-add" type="submit" title="Move down"{{ ' disabled' if loop.last else '' }}>↓</button></form>
+        <form method="post" action="/casebook/{{ case.case_id }}/remove" style="display:inline"
+              onsubmit="return confirm('Remove this item?')">
+          <input type="hidden" name="item_id" value="{{ it.item_id }}">
+          <button class="btn-add" type="submit">Remove</button></form>
+      </div>
+    </div>
+    <form method="post" action="/casebook/{{ case.case_id }}/item/{{ it.item_id }}/note" class="mt8">
+      <textarea name="note" rows="2"
+        placeholder="{{ 'Note…' if kind == 'note' else 'Evidence / note for this item…' }}">{{ it.note or '' }}</textarea>
+      <button class="btn" type="submit" style="margin-top:6px">Save note</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+
+<div class="section">
+  {{ m.section_head("", "Add a note") }}
+  <form method="post" action="/casebook/{{ case.case_id }}/note" class="card">
+    <div class="field"><label class="fld">Heading</label><input class="input" name="label" placeholder="e.g. Field visit / Observation"></div>
+    <div class="field"><label class="fld">Note</label><textarea name="note" rows="3" required placeholder="Free-form evidence, reasoning, next steps…"></textarea></div>
+    <button class="btn primary" type="submit">Add note</button>
+  </form>
+</div>
+{% endblock %}

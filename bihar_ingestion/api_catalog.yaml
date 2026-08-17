@@ -1,0 +1,145 @@
+# Bihar eProcurement API Catalog (Agent 1 deliverable)
+# ----------------------------------------------------
+# Endpoint registry for the public "open area" of eproc2.bihar.gov.in.
+# All paths are relative to portal.base_url (context path /EPSV2Web).
+# Verified against the captured HAR (eproc2.bihar.gov.in_updated.har).
+#
+# method:      HTTP verb used by the portal frontend.
+# path:        path relative to the context path.
+# params:      query parameters (with sample values where relevant).
+# returns:     top-level shape of the JSON response.
+# notes:       parsing / usage notes.
+
+masters:
+  getDefaultDateTimeFormat:
+    method: POST
+    path: /rest/master/getDefaultDateTimeFormat
+    returns: object
+    notes: "{dateTimeFormat}. Portal display format only."
+
+  getMasterListForOpenareaTenderListing:
+    method: POST
+    path: /rest/master/getMasterListForOpenareaTenderListing
+    returns: object
+    notes: >-
+      rfqCategoryList, rfqTypeList, dateCriteriaList, openareaStatusList,
+      valueCriteriaList, valueTypeList.
+
+  loadAllDeptWithParent:
+    method: POST
+    path: /rest/organization/loadAllDeptWithParent
+    params:
+      orgId: 538
+    returns: list
+    notes: "Department/organization hierarchy under the given root org id."
+
+  getChildOrg:
+    method: POST
+    path: /rest/organization/getChildOrg
+    params:
+      orgId: 538
+    returns: list
+    notes: "Immediate children of an organization."
+
+  showRfqCategoryRfqTypeProcCatBidPartList:
+    method: POST
+    path: /rest/master/showRfqCategoryRfqTypeProcCatBidPartList
+    returns: object
+    notes: "rfqCategoryList, rfqTypeList, procCatList, bidPartList."
+
+discovery:
+  # Every listing endpoint is portal-wide and paginated via startpoint/maxRow.
+  open:
+    method: POST
+    path: /rest/openarea/getTenderList
+    params:
+      startpoint: 0
+      maxRow: 100
+    returns: list
+    status: OPEN
+  past:
+    method: POST
+    path: /rest/openarea/getPastTenders
+    params:
+      startpoint: 0
+      maxRow: 100
+    returns: list
+    status: CLOSED
+  cancelled:
+    method: POST
+    path: /rest/openarea/getCancelTenderList
+    params:
+      startpoint: 0
+      maxRow: 100
+    returns: list
+    status: CANCELLED
+  upcoming:
+    method: POST
+    path: /rest/openarea/getUpcommingTenders
+    returns: list
+    status: UPCOMING
+    notes: "Observed without pagination params; probe startpoint/maxRow."
+  corrigendum:
+    method: POST
+    path: /rest/openarea/getCorrigendumTenders
+    returns: list
+    status: CORRIGENDUM
+    notes: "Observed without pagination params; probe startpoint/maxRow."
+
+detail:
+  previewTenderByTenderId:
+    method: POST
+    path: /rest/quotation/previewTenderByTenderId
+    params:
+      tenderId: 121339
+    returns: object
+    notes: >-
+      Full tender detail including templates[] and templateMap{}. Documents live
+      inside templateMap field values. Large PKI fields (signHash, dscCertString,
+      dscPublicKey) are archived raw but dropped from canonical tables.
+
+  getParentId:
+    method: POST
+    path: /rest/tender/getParentId
+    params:
+      tenderId: 121339
+    returns: scalar
+    notes: "Parent tender id for rebids / linked tenders (0 when none)."
+
+  orgConfigDetailsById:
+    method: POST
+    path: /rest/orgConfiguration/orgConfigDetailsById
+    params:
+      id: 538
+    returns: object
+    notes: "Org-level configuration; supporting call, not a primary fact."
+
+purchase_order:
+  getPoDetailsForPastTender:
+    method: POST
+    path: /rest/openarea/getPoDetailsForPastTender
+    params:
+      tenderId: 121339
+    returns: object
+    notes: "Awarded purchase order / contract for a closed tender."
+
+corrigendum:
+  getPublishedCorrigendumByTenderId:
+    method: POST
+    path: /rest/corrigendum/getPublishedCorrigendumByTenderId
+    params:
+      tenderId: 1001
+    returns: list
+    notes: "All published corrigenda for a tender (versioned)."
+
+documents:
+  downloadDynamicAttachment:
+    method: POST
+    path: /vendor/downloadDynamicAttachment.action
+    form_params:
+      relativePath: "{templateGroupId}/{timestamp}_{filename}"
+      originalFile: "{originalFileName}"
+    returns: binary
+    notes: >-
+      Form POST that streams the file. This phase records the constructed URL and
+      parameters in fact_document but does not download the binary.

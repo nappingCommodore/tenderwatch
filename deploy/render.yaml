@@ -1,0 +1,20 @@
+# Render Blueprint — Bihar Procurement Integrity Monitor
+# https://render.com/docs/blueprint-spec
+# Render builds the Dockerfile and injects $PORT (start.sh binds it automatically).
+services:
+  - type: web
+    name: bihar-procurement-analysis
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      # The free plan has no persistent disk and can't hold the 484 MB DB in git
+      # (GitHub LFS bandwidth is tiny). Keep the DB OUT of the repo and let the
+      # container download it at boot from your Hugging Face Space copy:
+      - key: DB_URL
+        value: https://huggingface.co/spaces/nappingCommodore/bihar-procurement-analysis/resolve/main/data/bihar_web.db
+    # A paid instance + a disk avoids re-downloading on every cold start:
+    # disk:
+    #   name: data
+    #   mountPath: /home/user/app/data
+    #   sizeGB: 2

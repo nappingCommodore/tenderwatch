@@ -1,0 +1,196 @@
+{
+  "rfqCategoryList": [
+    {
+      "rfqcategoryId": 100,
+      "code": "LUMPSUM",
+      "description": "LUMPSUM",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 101,
+      "code": "PERCENT",
+      "description": "PERCENTAGE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 102,
+      "code": "ITMRATE",
+      "description": "ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 103,
+      "code": "RTCNTR",
+      "description": "RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 104,
+      "code": "ITMRTLPSUM",
+      "description": "ITEM RATE LUMPSUM",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 105,
+      "code": "LRC",
+      "description": "LUMPSUM RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 106,
+      "code": "PIR",
+      "description": "PERCENTAGE ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 107,
+      "code": "PRC",
+      "description": "PERCENTAGE RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 108,
+      "code": "PLIR",
+      "description": "PERCENTAGE LUMPSUM ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 109,
+      "code": "PLRC",
+      "description": "PERCENTAGE LUMPSUM RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    }
+  ],
+  "dateCriteriaList": [
+    {
+      "dateCriteriaId": 101,
+      "description": "Bid Submission Start Date",
+      "createid": 0,
+      "createdate": null,
+      "updateid": 0,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "dateCriteriaId": 102,
+      "description": "Bid Submission End Date",
+      "createid": 0,
+      "createdate": null,
+      "updateid": 0,
+      "updatedate": null,
+      "isActive": null
+    }
+  ],
+  "rfqTypeList": [
+    {
+      "rfqtypeId": 100,
+      "orgid": 0,
+      "description": "Limited Tender",
+      "createid": null,
+      "createdate": 1482216464088,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "LIMITED",
+      "singleTenderFlag": "N"
+    },
+    {
+      "rfqtypeId": 101,
+      "orgid": 0,
+      "description": "Open Tender",
+      "createid": null,
+      "createdate": 1482216464088,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "N"
+    },
+    {
+      "rfqtypeId": 120,
+      "orgid": 0,
+      "description": "Short Tender",
+      "createid": null,
+      "createdate": 1578302585716,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "Y"
+    },
+    {
+      "rfqtypeId": 121,
+      "orgid": 0,
+      "description": "E-Auction",
+      "createid": null,
+      "createdate": 1609172890506,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "N"
+    }
+  ],
+  "valueCriteriaList": [],
+  "openareaStatusList": [
+    {
+      "statusId": 100,
+      "description": "PUBLISHED",
+      "createid": 0,
+      "createdate": null,
+      "updateid": 0,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "statusId": 101,
+      "description": "LIVE",
+      "createid": 0,
+      "createdate": null,
+      "updateid": 0,
+      "updatedate": null,
+      "isActive": null
+    }
+  ],
+  "valueTypeList": []
+}

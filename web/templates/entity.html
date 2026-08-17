@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}{{ title }}{% endblock %}
+{% block crumbs %}<a href="/{{ kind }}s">{{ kind|capitalize }}s</a> · <b>{{ title|truncate(40) }}</b>{% endblock %}
+{% block content %}
+<div class="page-h">
+  <div class="kicker">{{ kind }} profile</div>
+  <h1>{{ title }}</h1>
+  {% if subtitle %}<div class="sub">{{ subtitle }}</div>{% endif %}
+  <div class="row mt8">{{ m.add_btn(kind, eid, title, '+ Add ' ~ kind ~ ' to case') }}</div>
+</div>
+{% if warn %}<div class="warnbox mt16">⚠ {{ warn }}</div>{% endif %}
+
+<div class="kpis mt16" style="grid-template-columns:repeat({{ kpis|length }},1fr)">
+  {% for value, label, accent in kpis %}{{ m.kpi(value, label, accent) }}{% endfor %}
+</div>
+
+<div class="grid c2 section">
+  <div class="card">
+    <h2 style="font-size:15px">{{ bar_title }}</h2>
+    <div id="cbar" class="chart" style="height:340px"></div>
+  </div>
+  <div class="card pad-0">
+    <div style="padding:14px 16px 0"><h2 style="font-size:15px">Flags</h2></div>
+    <div class="table-wrap" style="max-height:360px;border:none">
+      <table class="tbl mt8"><thead><tr><th class="r">Score</th><th>Rule</th><th>Status</th><th class="r">Tender/RFQ</th><th>Evidence</th></tr></thead><tbody>
+        {% for fl in flags %}<tr>
+          <td class="r">{{ m.sev_pill(fl.score) }}</td>
+          <td class="mono">{{ fl.rule_code }}{{ m.qmark(fl.rule_code) }}</td>
+          <td>{{ m.status_pill(fl.status) }}</td>
+          <td class="r">{% if fl.tender_id %}<a href="/case/{{ fl.tender_id | orgid }}">{{ fl.tender_id | orgid }}</a>{% else %}—{% endif %}</td>
+          <td class="muted" style="max-width:280px">{{ fl.evidence }}</td>
+        </tr>{% else %}<tr><td colspan="5" class="empty">No flags.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+{% if related %}
+<div class="section">
+  {{ m.section_head("", "Related parties (shared PAN / GSTIN)") }}
+  <div class="table-wrap">
+    <table class="tbl"><thead><tr><th>Vendor A</th><th>Vendor B</th><th>Shared PAN</th><th>Shared GSTIN</th></tr></thead><tbody>
+      {% for r in related %}<tr><td>{{ r.name_1 }}</td><td>{{ r.name_2 }}</td>
+        <td class="mono">{{ r.shared_pan or "—" }}</td><td class="mono">{{ r.shared_gstin or "—" }}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endif %}
+
+<div class="section">
+  {{ m.section_head("", "Ego network") }}
+  <div class="card"><div id="ego" class="chart tall"></div></div>
+</div>
+
+<script type="application/json" id="d-bar">{{ bars|tojson }}</script>
+<script type="application/json" id="d-graph">{{ graph|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  Charts.hbar('cbar', Charts.readJSON('d-bar'), {labelWidth: 190, valueFormatter: v => '₹' + v + ' Cr'});
+  Charts.graph('ego', Charts.readJSON('d-graph'));
+</script>
+{% endblock %}

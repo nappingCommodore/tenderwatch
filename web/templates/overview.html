@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Integrity Monitor{% endblock %}
+{% block crumbs %}<b>Integrity Monitor</b>{% endblock %}
+{% block content %}
+<div class="page-h">
+  <div class="kicker">Public procurement · red-flag analytics</div>
+  <h1>Bihar Procurement Integrity Monitor</h1>
+  <div class="sub">A forensic read of the Bihar e-Procurement record — vendor capture, overpricing
+    against the Schedule of Rates, contract splitting and data corruption across the full awarded register.</div>
+</div>
+
+<div class="kpis mt16">
+  {% for value, label, accent in kpis %}{{ m.kpi(value, label, accent) }}{% endfor %}
+</div>
+
+<div class="helpbar mt16">{{ m.icon('book') }}
+  <span>New here? <a href="/guide">Read how to use this monitor</a> — what each red flag means and how to
+    turn a lead into a finding.</span></div>
+
+<div class="grid c2 section">
+  <div class="card">
+    <div class="spread"><h2 style="font-size:15px">Signals by family</h2><span class="tag">{{ kpi_flags }} total</span></div>
+    <div id="famdonut" class="chart" style="height:260px"></div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:15px">Signals by rule</h2>
+    <div id="rulebar" class="chart" style="height:260px"></div>
+  </div>
+</div>
+
+{% for s in sections %}
+<div class="section">
+  {{ m.section_head(s.n, s.title, s.cap) }}
+  {{ m.bars(s.rows) }}
+  {% if s.note %}<div class="note">{{ s.note }}</div>{% endif %}
+</div>
+{% endfor %}
+
+<div class="section">
+  {{ m.section_head("06", "Data integrity", "Corrupted amounts quarantined, not deleted") }}
+  <div class="card">
+    <div class="row">
+      <div class="kpi accent" style="min-width:150px"><div class="n num">{{ artifact_count }}</div>
+        <div class="l">Impossible values</div></div>
+      <div class="muted" style="flex:1">Awarded amounts that are internally impossible — a number written
+        twice, or a percentage line larger than its base. Raw values are preserved for audit; all analysis
+        uses repaired figures. <a href="/investigations?family=artifact" style="color:var(--info)">Review artifacts →</a></div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="d-donut">{{ donut|tojson }}</script>
+<script type="application/json" id="d-rulebar">{{ rulebar|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  Charts.donut('famdonut', Charts.readJSON('d-donut'));
+  Charts.hbar('rulebar', Charts.readJSON('d-rulebar'), {labelWidth: 110, valueFormatter: v => v.toLocaleString()});
+</script>
+{% endblock %}

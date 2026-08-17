@@ -1,0 +1,28 @@
+# Fly.io — Bihar Procurement Integrity Monitor
+# Deploy from this folder (the DB is baked into the image):
+#   fly launch --no-deploy      # detects this fly.toml + Dockerfile
+#   fly deploy
+app = "bihar-procurement-analysis"     # must be globally unique — change if taken
+primary_region = "bom"                 # Mumbai; pick another near you: https://fly.io/docs/reference/regions/
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 7860
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"                     # bump to 1gb if you see out-of-memory
+
+# Optional: persist casebook / review edits across restarts.
+#   fly volumes create data --size 1 --region iad
+# then uncomment and set BIHAR_DB=/data/bihar_web.db (the DB is copied on first boot
+# only if you also add that copy step — otherwise it serves the baked read-only DB).
+# [mounts]
+#   source = "data"
+#   destination = "/data"

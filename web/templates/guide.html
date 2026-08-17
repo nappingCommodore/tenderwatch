@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}How to use{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>How to use</b>{% endblock %}
+{% block content %}
+<div class="page-h">
+  <div class="kicker">Guide · reading the red flags</div>
+  <h1>How to use this monitor</h1>
+  <div class="sub">This tool surfaces {{ total_flags }} statistical red flags across the Bihar
+    e-procurement record. Flags are investigative <b>leads, not verdicts</b> — this page explains how to
+    read them, what each one means, and how to turn them into findings.</div>
+</div>
+
+<div class="section">
+  {{ m.section_head("01", "The investigative workflow", "Overview → Worklist → Case → decide") }}
+  <div class="steps">
+    {% for title, body in workflow %}
+    <div class="step"><div class="no">{{ loop.index }}</div>
+      <div><h4>{{ title }}</h4><p>{{ body }}</p></div></div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="section">
+  {{ m.section_head("02", "How to read a flag", "What the score, status and values mean") }}
+  <div class="grid c2">
+    {% for title, body in score_notes %}
+    <div class="card"><h4 style="font-size:14px">{{ title }}</h4>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">{{ body }}</p></div>
+    {% endfor %}
+  </div>
+  <div class="row mt16" style="gap:8px">
+    <span class="muted" style="font-size:12.5px">Severity legend:</span>
+    <span class="pill sev-hi">≥ 0.60 strong</span>
+    <span class="pill sev-md">0.30–0.60 review</span>
+    <span class="pill sev-lo">&lt; 0.30 weak</span>
+    <span class="muted" style="font-size:12.5px">· Status:</span>
+    {{ m.status_pill('open') }} {{ m.status_pill('confirmed') }} {{ m.status_pill('dismissed') }}
+  </div>
+</div>
+
+<div class="section">
+  {{ m.section_head("03", "The flag catalogue", "Every detector, what it means, how to verify") }}
+  {% for g in groups %}
+  <div class="famhead">
+    <span class="dot" style="background:{{ g.color }}"></span>
+    <h3>{{ g.label }}</h3>
+    <span class="d">{{ g.desc }}</span>
+  </div>
+  <div class="fcat">
+    {% for fl in g.flags %}
+    <div class="fdoc">
+      <div class="top">
+        <span class="code">{{ fl.code }}</span>
+        <h4>{{ fl.title }}</h4>
+        <div class="stat">
+          <span><b>{{ fl.n|num }}</b> flags</span>
+          {% if fl.open_n %}<span><b>{{ fl.open_n|num }}</b> open</span>{% endif %}
+          {% if fl.conf is not none %}<span>conf <b>{{ '%.2f'|format(fl.conf) }}</b></span>{% endif %}
+          {% if fl.max is not none %}<span>max score <b>{{ '%.2f'|format(fl.max) }}</b></span>{% endif %}
+        </div>
+      </div>
+      <p class="lead">{{ fl.what }}</p>
+      <dl class="kv">
+        <dt>Computed</dt><dd>{{ fl.how }}</dd>
+        <dt>How to verify</dt><dd>{{ fl.verify }}</dd>
+      </dl>
+      {% if fl.n %}<div class="mt8"><a href="/investigations?rule={{ fl.code }}&status=" class="tag"
+        style="color:var(--info)">See {{ fl.n|num }} {{ fl.code }} flags in the worklist →</a></div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section">
+  {{ m.section_head("04", "Finding red flags: a playbook", "How to work from a lead to a finding") }}
+  <div class="steps">
+    {% for title, body in playbook %}
+    <div class="step"><div class="no">{{ m.icon('flag') }}</div>
+      <div><h4>{{ title }}</h4><p>{{ body }}</p></div></div>
+    {% endfor %}
+  </div>
+  <div class="helpbar mt16">{{ m.icon('arrow') }}
+    <span>Ready to start? Open the <a href="/investigations">Worklist</a> to triage by score, or the
+      <a href="/explore">Data Explorer</a> to build your own view.</span></div>
+</div>
+{% endblock %}

@@ -1,0 +1,422 @@
+{
+  "rfqCategoryList": [
+    {
+      "rfqcategoryId": 100,
+      "code": "LUMPSUM",
+      "description": "LUMPSUM",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 101,
+      "code": "PERCENT",
+      "description": "PERCENTAGE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 102,
+      "code": "ITMRATE",
+      "description": "ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 103,
+      "code": "RTCNTR",
+      "description": "RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 104,
+      "code": "ITMRTLPSUM",
+      "description": "ITEM RATE LUMPSUM",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 105,
+      "code": "LRC",
+      "description": "LUMPSUM RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 106,
+      "code": "PIR",
+      "description": "PERCENTAGE ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 107,
+      "code": "PRC",
+      "description": "PERCENTAGE RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 108,
+      "code": "PLIR",
+      "description": "PERCENTAGE LUMPSUM ITEM RATE",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    },
+    {
+      "rfqcategoryId": 109,
+      "code": "PLRC",
+      "description": "PERCENTAGE LUMPSUM RATE CONTRACT",
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null
+    }
+  ],
+  "rfqTypeList": [
+    {
+      "rfqtypeId": 100,
+      "orgid": 0,
+      "description": "Limited Tender",
+      "createid": null,
+      "createdate": 1482216464088,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "LIMITED",
+      "singleTenderFlag": "N"
+    },
+    {
+      "rfqtypeId": 101,
+      "orgid": 0,
+      "description": "Open Tender",
+      "createid": null,
+      "createdate": 1482216464088,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "N"
+    },
+    {
+      "rfqtypeId": 120,
+      "orgid": 0,
+      "description": "Short Tender",
+      "createid": null,
+      "createdate": 1578302585716,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "Y"
+    },
+    {
+      "rfqtypeId": 121,
+      "orgid": 0,
+      "description": "E-Auction",
+      "createid": null,
+      "createdate": 1609172890506,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": 1,
+      "tenderType": "OPEN",
+      "singleTenderFlag": "N"
+    }
+  ],
+  "bidPartList": [
+    {
+      "id": 1,
+      "bidpartno": 4,
+      "code": "1,2,3,4",
+      "description": "BidPart 1,BidPart 2,BidPart 3,BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 2,
+      "bidpartno": 3,
+      "code": "1&2,3,4",
+      "description": "BidPart 1 & BidPart 2,BidPart 3,BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 3,
+      "bidpartno": 3,
+      "code": "1,2,3&4",
+      "description": "BidPart 1,BidPart 2,BidPart 3 & BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 4,
+      "bidpartno": 3,
+      "code": "1,2&3,4",
+      "description": "BidPart 1,BidPart 2 & BidPart 3,BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 5,
+      "bidpartno": 2,
+      "code": "1&2&3,4",
+      "description": "BidPart 1 & BidPart 2 & BidPart 3,BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 6,
+      "bidpartno": 2,
+      "code": "1&2,3&4",
+      "description": "BidPart 1 & BidPart 2,BidPart 3 & BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 7,
+      "bidpartno": 2,
+      "code": "1,2&3&4",
+      "description": "BidPart 1,BidPart 2 & BidPart 3 & BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 8,
+      "bidpartno": 1,
+      "code": "1&2&3&4",
+      "description": "BidPart 1 & BidPart 2 & BidPart 3 & BidPart 4",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 4
+    },
+    {
+      "id": 9,
+      "bidpartno": 3,
+      "code": "1,2,3",
+      "description": "BidPart 1, BidPart 2, BidPart 3",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 3
+    },
+    {
+      "id": 10,
+      "bidpartno": 2,
+      "code": "1&2,3",
+      "description": "BidPart 1 & BidPart 2,BidPart 3",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 3
+    },
+    {
+      "id": 11,
+      "bidpartno": 2,
+      "code": "1,2&3",
+      "description": "BidPart 1,BidPart 2 & BidPart 3 ",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 3
+    },
+    {
+      "id": 12,
+      "bidpartno": 1,
+      "code": "1&2&3",
+      "description": "BidPart 1 & BidPart 2 & BidPart 3 ",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 3
+    },
+    {
+      "id": 13,
+      "bidpartno": 2,
+      "code": "1,2",
+      "description": "BidPart 1,BidPart 2",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 2
+    },
+    {
+      "id": 14,
+      "bidpartno": 1,
+      "code": "1&2",
+      "description": "BidPart 1 & BidPart 2",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 2
+    },
+    {
+      "id": 15,
+      "bidpartno": 1,
+      "code": "1",
+      "description": "BidPart 1 ",
+      "createid": 100,
+      "createdate": 1487747003752,
+      "updateid": 100,
+      "updatedate": 1487747003752,
+      "isActive": 1,
+      "maxbidpartno": 1
+    }
+  ],
+  "procCatList": [
+    {
+      "proccatId": 999,
+      "description": "ITMRATE",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1522,
+      "description": "ELECTRICAL",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1554,
+      "description": "GENERAL",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1556,
+      "description": "MECHANICAL",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1557,
+      "description": "CIVIL",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1558,
+      "description": "IT-Related-works",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    },
+    {
+      "proccatId": 1559,
+      "description": "eAuction-Mining",
+      "orgid": null,
+      "createid": null,
+      "createdate": null,
+      "updateid": null,
+      "updatedate": null,
+      "isActive": null,
+      "parentProccatId": 0,
+      "childProcCatList": []
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+{% import "macros.html" as m %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Integrity Monitor{% endblock %} · Bihar Procurement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <div class="mark">B</div>
+      <div class="name">Integrity Monitor<small>Bihar e-Procurement</small></div>
+    </a>
+
+    <div class="nav-group">
+      <div class="lbl">Overview</div>
+      {{ m.nav('/', 'Integrity Monitor', 'grid', active) }}
+      {{ m.nav('/guide', 'How to use', 'book', active) }}
+    </div>
+    <div class="nav-group">
+      <div class="lbl">Investigate</div>
+      {{ m.nav('/investigations', 'Worklist', 'flag', active) }}
+      {{ m.nav('/explore', 'Data Explorer', 'search', active) }}
+      {{ m.nav('/casebook', 'Casebook', 'folder', active) }}
+    </div>
+    <div class="nav-group">
+      <div class="lbl">Entities</div>
+      {{ m.nav('/vendors', 'Vendors', 'box', active) }}
+      {{ m.nav('/departments', 'Departments', 'building', active) }}
+      {{ m.nav('/officers', 'Officers', 'user', active) }}
+    </div>
+    <div class="nav-group">
+      <div class="lbl">Analytics</div>
+      {{ m.nav('/map', 'Map & Trends', 'map', active) }}
+      {{ m.nav('/network', 'Network', 'share', active) }}
+    </div>
+
+    <div class="spacer"></div>
+    <div class="foot">
+      {{ kpi_tenders or '—' }} tenders · {{ kpi_flags or '—' }} flags<br>
+      Read-only · leads, not verdicts
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs">{% block crumbs %}<b>Overview</b>{% endblock %}</div>
+      <div class="grow"></div>
+      <div class="casepick">
+        <button type="button" class="casechip {{ '' if active_case else 'ghost' }}" id="casebtn"
+                aria-haspopup="true" aria-expanded="false">
+          {{ m.icon('folder') }}
+          <span>{{ active_case.title|truncate(20) if active_case else 'No active case' }}</span>
+          {% if active_case %}<b>{{ active_case.n_items }}</b>{% endif %}
+          <svg class="cv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="casemenu" id="casemenu" hidden>
+          <div class="cm-head">Switch active case</div>
+          <div class="cm-scroll">
+          {% for c in all_cases %}
+            <form method="post" action="/casebook/{{ c.case_id }}/activate">
+              <input type="hidden" name="next" value="{{ cur_path }}">
+              <button type="submit" class="cm-item {{ 'on' if active_case and active_case.case_id == c.case_id }}">
+                <span class="cm-t">{{ c.title }}</span><span class="cm-n">{{ c.n_items }}</span>
+              </button>
+            </form>
+          {% else %}
+            <div class="cm-empty">No cases yet.</div>
+          {% endfor %}
+          </div>
+          <a class="cm-link" href="/casebook">＋ New / manage cases</a>
+        </div>
+      </div>
+      <form class="search" action="/explore" method="get">
+        <span class="ic">{{ m.icon('search') }}</span>
+        <input class="input" type="text" name="text" placeholder="Search tenders by text / ref…" autocomplete="off">
+      </form>
+    </div>
+    <div class="content">
+      {% block content %}{% endblock %}
+      <div class="disclaimer">
+        Indicators surface statistical patterns, not findings of wrongdoing. Monetary figures use
+        trusted (repaired) values; corrupted source amounts are flagged and preserved for audit.
+      </div>
+    </div>
+  </div>
+</div>
+<script type="application/json" id="flag-help">{{ flag_help|tojson }}</script>
+<script src="/static/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

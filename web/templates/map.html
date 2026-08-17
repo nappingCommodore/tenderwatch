@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Map & Trends{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>Map &amp; Trends</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>Map &amp; trends</h1>
+  <div class="sub">Award value, volume and flags rolled up to Bihar's 38 districts (department names mapped
+    best-effort), plus the awarding timeline — watch for fiscal year-end (March) spikes.</div></div>
+
+<div class="card section">
+  <h2 style="font-size:15px">Awards over time (trusted value)</h2>
+  <div id="timeline" class="chart" style="height:260px"></div>
+</div>
+
+<div class="section">
+  <div class="section-head"><span class="n"></span><h2>By district</h2>
+    <span class="cap" style="margin-left:auto">
+      Colour by:
+      <a href="/map?metric=value" class="{{ 'faint' if metric!='value' }}">value</a> ·
+      <a href="/map?metric=awards" class="{{ 'faint' if metric!='awards' }}">awards</a> ·
+      <a href="/map?metric=flags" class="{{ 'faint' if metric!='flags' }}">flags</a>
+    </span></div>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr">
+    <div class="card">
+      {% if geojson %}<div id="map" class="chart tall"></div>
+      {% else %}<div class="empty">District GeoJSON not found — showing the ranked table only.</div>{% endif %}
+    </div>
+    <div class="card pad-0">
+      <div class="table-wrap" style="max-height:520px;border:none">
+        <table class="tbl"><thead><tr><th>District</th><th class="r">₹Cr</th><th class="r">Awards</th><th class="r">Flags</th></tr></thead><tbody>
+          {% for r in table %}<tr>
+            <td><a href="/explore?district={{ r.district|urlencode }}">{{ r.district }}</a></td><td class="r">{{ r.value_cr }}</td>
+            <td class="r">{{ r.awards|num }}</td><td class="r">{{ r.flags|num }}</td>
+          </tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+  <div class="note">Click a district (map or table) to see its tenders. {{ unmapped }} departments couldn't be matched to a district.</div>
+</div>
+
+<script type="application/json" id="d-timeline">{{ timeline|tojson }}</script>
+{% if geojson %}<script type="application/json" id="d-geo">{{ geojson|tojson }}</script>
+<script type="application/json" id="d-choro">{{ choro|tojson }}</script>{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  Charts.tbar('timeline', Charts.readJSON('d-timeline'), {yName: '₹ Cr', rotate: 60,
+    valueFormatter: v => '₹' + v + ' Cr'});
+  {% if geojson %}
+  Charts.choropleth('map', {geojsonId: 'd-geo', nameProperty: 'district',
+    data: Charts.readJSON('d-choro'), unit: '{{ unit }}', linkPrefix: '/explore?district='});
+  {% endif %}
+</script>
+{% endblock %}

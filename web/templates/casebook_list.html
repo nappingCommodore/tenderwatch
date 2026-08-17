@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Casebook{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>Casebook</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>Casebook</h1>
+  <div class="sub">Build a case over time: collect flags, tenders, vendors and notes as you gather
+    evidence, then export the finished file. Pick an <b>active case</b> and use the “+ Case” buttons around
+    the app to add evidence to it.</div></div>
+
+{% if need %}<div class="warnbox mt16">Start a new case or set one active first — then the “+ Case”
+  buttons will add evidence to it.</div>{% endif %}
+
+<div class="card section">
+  <h2 style="font-size:15px">New case</h2>
+  <form method="post" action="/casebook/new" class="mt8">
+    <div class="toolbar">
+      <div class="field" style="min-width:280px"><label class="fld">Title</label>
+        <input class="input" name="title" required placeholder="e.g. Danapur splitting — PRAMOD KUMAR"></div>
+      <div class="field" style="flex:1;min-width:280px"><label class="fld">Summary (optional)</label>
+        <input class="input" name="summary" placeholder="What you're investigating"></div>
+      <div class="field"><label class="fld">&nbsp;</label><button class="btn primary" type="submit">Create &amp; activate</button></div>
+    </div>
+  </form>
+</div>
+
+<div class="section">
+  {{ m.section_head("", "Your cases") }}
+  <div class="table-wrap">
+    <table class="tbl"><thead><tr>
+      <th>Case</th><th>Status</th><th class="r">Items</th><th class="r">Updated</th><th>Actions</th>
+    </tr></thead><tbody>
+      {% for c in cases %}
+      <tr {% if active_case and active_case.case_id == c.case_id %}style="background:var(--accent-dim)"{% endif %}>
+        <td><a href="/casebook/{{ c.case_id }}"><b>{{ c.title }}</b></a>
+          {% if c.summary %}<div class="faint" style="font-size:12px">{{ c.summary|truncate(90) }}</div>{% endif %}</td>
+        <td>{% if c.status == 'complete' %}<span class="pill confirmed">complete</span>{% else %}<span class="pill open">open</span>{% endif %}</td>
+        <td class="r">{{ c.n_items }}</td>
+        <td class="r muted">{{ (c.updated_at or '')|string|truncate(16, True, '') }}</td>
+        <td class="row" style="gap:8px">
+          {% if not (active_case and active_case.case_id == c.case_id) %}
+          <form method="post" action="/casebook/{{ c.case_id }}/activate" style="display:inline">
+            <button class="btn-add" type="submit">Set active</button></form>
+          {% else %}<span class="pill open">active</span>{% endif %}
+          <a class="btn-add" href="/casebook/{{ c.case_id }}/export.md">Export</a>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="5" class="empty">No cases yet — create one above.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+# Bihar eProcurement Ingestion Framework — configuration
+# Copy to config.yaml and adjust as needed. All keys are optional; the values
+# shown here are the built-in defaults.
+
+portal:
+  # Base URL including the servlet context path.
+  base_url: "https://eproc2.bihar.gov.in/EPSV2Web"
+  # Organization ids whose DEPARTMENT HIERARCHY is loaded into dim_department for
+  # name enrichment. 538 = "Government of Bihar" is the top-level root (parentId
+  # 0) and its tree already contains every department, so this single default
+  # covers the whole portal. You do NOT need to enumerate sub-organizations.
+  root_org_ids:
+    - 538
+  # Organization the tender LISTING crawl is scoped to. 538 (the portal root)
+  # returns every tender across all departments, so the default crawls the whole
+  # portal in one pass. Set to null to send an empty filter (equivalent), or to a
+  # specific sub-org id to pilot a smaller subset.
+  discovery_org_id: 538
+
+http:
+  # Seconds to wait between requests to the portal (politeness / rate limiting).
+  request_delay_seconds: 0.75
+  # Per-request timeout in seconds.
+  timeout_seconds: 60
+  # Number of retry attempts for transient failures (5xx / network errors).
+  max_retries: 4
+  # Initial backoff in seconds; doubles on each retry (capped).
+  backoff_base_seconds: 1.5
+  backoff_max_seconds: 30
+  user_agent: "BEDIF/0.1 (+public-procurement-analytics)"
+  # Verify the portal's TLS certificate. Some government portals serve an
+  # incomplete certificate chain that the local trust store cannot verify. If
+  # you hit "certificate verify failed", either point ca_bundle at a PEM file
+  # containing the portal's intermediate/root certs, or set verify_tls: false
+  # (bypasses verification — understand the risk before doing so).
+  verify_tls: true
+  ca_bundle: null
+
+pagination:
+  # Rows to request per discovery page.
+  page_size: 100
+  # Safety ceiling on pages per listing endpoint (0 = unlimited).
+  max_pages: 0
+
+database:
+  # Path to the SQLite database file that the pipeline produces.
+  path: "data/bihar_eproc.db"
+
+storage:
+  # Where raw JSON payloads are optionally mirrored to disk (in addition to the
+  # raw_response table). Set to null to disable the on-disk mirror.
+  raw_json_dir: "storage/raw_json"
+
+crawl:
+  # Which discovery tabs to crawl. Valid values: open, past, cancelled,
+  # upcoming, corrigendum.
+  tabs:
+    - open
+    - past
+    - cancelled
+    - upcoming
+    - corrigendum
+  # Re-fetch tender details even if already archived (full refresh).
+  force_refetch: false

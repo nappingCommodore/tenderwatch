@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Worklist{% endblock %}
+{% block crumbs %}<a href="/">Overview</a> · <b>Worklist</b>{% endblock %}
+{% block content %}
+<div class="page-h"><h1>Red-flag worklist</h1>
+  <div class="sub">Every detector, consolidated and ranked by score (severity × confidence). Flags are
+    investigative leads, not verdicts — <a href="/guide" style="color:var(--info)">read what each flag means →</a></div></div>
+
+<form class="card toolbar mt16" method="get" action="/investigations">
+  <div class="field search" style="min-width:240px">
+    <label class="fld">Search</label>
+    <input class="input" type="text" name="search" value="{{ f.search }}" placeholder="vendor / dept / evidence">
+  </div>
+  <div class="field"><label class="fld">Rule</label>
+    <select name="rule"><option value="">All</option>
+      {% for r in rules %}<option value="{{ r }}" {{ 'selected' if f.rule==r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label class="fld">Family</label>
+    <select name="family"><option value="">All</option>
+      {% for r in families %}<option value="{{ r }}" {{ 'selected' if f.family==r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label class="fld">Status</label>
+    <select name="status"><option value="">Any</option>
+      {% for r in statuses %}<option value="{{ r }}" {{ 'selected' if f.status==r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label class="fld">Min score</label>
+    <input class="input" type="number" step="0.05" min="0" max="1" name="min_score" value="{{ f.min_score }}" style="width:96px"></div>
+  <div class="field"><label class="fld">&nbsp;</label><button class="btn primary" type="submit">Apply</button></div>
+</form>
+
+<div class="spread mt16"><span class="muted"><b>{{ total|num }}</b> flags match · showing top {{ shown }}</span></div>
+
+<div class="table-wrap mt8">
+  <table class="tbl">
+    <thead><tr>
+      <th class="r">Score</th><th>Rule</th><th>Family</th><th>Status</th>
+      <th>Entity</th><th class="r">Tender/RFQ</th><th>Evidence</th><th></th>
+    </tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td class="r">{{ m.sev_pill(r.score) }}</td>
+        <td class="mono">{{ r.rule_code }}{{ m.qmark(r.rule_code) }}</td>
+        <td class="muted">{{ r.family }}</td>
+        <td>{{ m.status_pill(r.status) }}</td>
+        <td>
+          {% if r.vendor_name %}<a href="/explore?vendor={{ r.vendor_name|urlencode }}">{{ r.vendor_name }}</a>
+          {% elif r.dept_name %}{{ r.dept_name }}{% else %}<span class="faint">{{ r.entity_type }}</span>{% endif %}
+        </td>
+        <td class="r">{% if r.tender_id %}<a href="/case/{{ r.tender_id | orgid }}">{{ r.tender_id | orgid }}</a>{% else %}—{% endif %}</td>
+        <td class="muted" style="max-width:360px">{{ r.evidence }}</td>
+        <td>{{ m.add_btn('flag', r.flag_id, r.rule_code ~ ' — ' ~ (r.vendor_name or r.dept_name or ('T' ~ (r.tender_id | orgid)))) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="empty">No flags match the current filters.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

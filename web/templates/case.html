@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% block title %}Tender {{ t.org_tender_id or t.tender_id }}{% endblock %}
+{% block crumbs %}<a href="/investigations">Worklist</a> · <b>Tender {{ t.org_tender_id or t.tender_id }}</b>{% endblock %}
+{% block content %}
+{% if saved %}<div class="warnbox mt0" style="background:rgba(70,185,138,.1);border-color:rgba(70,185,138,.4);color:#b6f0d4">Review saved.</div>{% endif %}
+
+<div class="page-h mt16">
+  <div class="kicker">Case detail</div>
+  <h1>{{ t.description or "Tender " ~ (t.org_tender_id or t.tender_id) }}</h1>
+  <div class="sub">Tender/RFQ ID <b style="color:var(--text)">{{ t.org_tender_id or t.tender_id }}</b> · Ref {{ t.ref_no or "—" }}</div>
+  <div class="row mt8">{{ m.add_btn('tender', t.tender_id, 'T' ~ (t.org_tender_id or t.tender_id) ~ ' — ' ~ ((t.description or '')[:60]), '+ Add tender to case') }}</div>
+</div>
+
+<div class="kpis mt16" style="grid-template-columns:repeat(4,1fr)">
+  {{ m.kpi(t.pac_amount|rupees, "Estimate (PAC)") }}
+  {{ m.kpi(t.dept or "—", "Department") }}
+  {{ m.kpi(t.listing_status or "—", "Status") }}
+  {{ m.kpi((t.publish_date or "—")|string|truncate(10, True, ""), "Published") }}
+</div>
+<div class="card mt16 muted" style="font-size:13px">
+  Issuing authority: <b style="color:var(--text)">{{ t.issuing_authority or "—" }}</b>
+  {% if t.issuing_desig %}<span class="faint">({{ t.issuing_desig }})</span>{% endif %}
+  &nbsp;·&nbsp;
+  Approving authority:
+  {% if t.approving_authority_id %}<a href="/officer/{{ t.approving_authority_id }}" style="color:var(--info)"><b>{{ t.approving_authority or "—" }}</b></a>
+  {% else %}<b style="color:var(--text)">{{ t.approving_authority or "—" }}</b>{% endif %}
+  {% if t.approving_desig %}<span class="faint">({{ t.approving_desig }})</span>{% endif %}
+  {% if t.dept_id %}&nbsp;·&nbsp;<a href="/department/{{ t.dept_id }}" style="color:var(--info)">Department profile →</a>{% endif %}
+</div>
+
+<div class="section">
+  {{ m.section_head("", "Awards (purchase orders)") }}
+  <div class="table-wrap">
+    <table class="tbl"><thead><tr>
+      <th class="r">PO</th><th>Vendor</th><th class="r">PO value</th><th class="r">Trusted</th>
+      <th>Quality</th><th class="r">Created</th></tr></thead><tbody>
+      {% for p in pos %}<tr>
+        <td class="r mono">{{ p.po_id }}</td>
+        <td>{% if p.vendor_id %}<a href="/vendor/{{ p.vendor_id }}">{{ p.vendor }}</a>{% else %}{{ p.vendor or "—" }}{% endif %}</td>
+        <td class="r">{{ p.po_value|rupees }}</td>
+        <td class="r">{{ p.trusted_po_value|rupees }}</td>
+        <td>{% if p.data_quality_flag %}<span class="pill sev-md">{{ p.data_quality_flag }}</span>{% else %}<span class="faint">clean</span>{% endif %}</td>
+        <td class="r muted">{{ (p.creation_date or "")|string|truncate(10, True, "") }}</td>
+      </tr>{% else %}<tr><td colspan="6" class="empty">No purchase orders.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+
+<div class="section">
+  {{ m.section_head("", "Line items — awarded vs Schedule of Rates") }}
+  <div class="table-wrap">
+    <table class="tbl"><thead><tr>
+      <th class="r">#</th><th>Item</th><th class="r">Qty</th><th class="r">Awarded rate</th>
+      <th class="r">SOR rate</th><th class="r">× SOR</th><th class="r">Total</th></tr></thead><tbody>
+      {% for i in items %}<tr>
+        <td class="r muted">{{ i.serial_no }}</td>
+        <td>{{ i.item_name }}</td>
+        <td class="r">{{ i.quantity }}</td>
+        <td class="r">{{ i.awarded_rate|rupees }}</td>
+        <td class="r">{{ i.sor_rate|rupees if i.sor_rate else "—" }}</td>
+        <td class="r">{% if i.x_sor and i.x_sor >= 2 %}<span class="pill sev-hi">{{ i.x_sor }}×</span>{% elif i.x_sor %}{{ i.x_sor }}×{% else %}—{% endif %}</td>
+        <td class="r">{{ i.total_cost|rupees }}</td>
+      </tr>{% else %}<tr><td colspan="7" class="empty">No itemised line items.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+
+<div class="grid c2 section">
+  <div class="card pad-0">
+    <div style="padding:14px 16px 0"><h2 style="font-size:15px">Flags on this case</h2></div>
+    <table class="tbl mt8"><thead><tr><th class="r">Score</th><th>Rule</th><th>Status</th><th>Evidence</th><th></th></tr></thead><tbody>
+      {% for fl in flags %}<tr>
+        <td class="r">{{ m.sev_pill(fl.score) }}</td><td class="mono">{{ fl.rule_code }}{{ m.qmark(fl.rule_code) }}</td>
+        <td>{{ m.status_pill(fl.status) }}</td><td class="muted">{{ fl.evidence }}</td>
+        <td>{{ m.add_btn('flag', fl.flag_id, fl.rule_code ~ ' — T' ~ (t.org_tender_id or t.tender_id)) }}</td>
+      </tr>{% else %}<tr><td colspan="5" class="empty">No flags on this tender.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:15px">Review a flag</h2>
+    {% if flags %}
+    <form method="post" action="/case/{{ t.org_tender_id or t.tender_id }}/review" class="mt8">
+      <div class="field"><label class="fld">Flag</label>
+        <select name="flag_id">
+          {% for fl in flags %}<option value="{{ fl.flag_id }}">{{ fl.rule_code }} · score {{ '%.2f'|format(fl.score) }} · {{ fl.status }}</option>{% endfor %}
+        </select></div>
+      <div class="field"><label class="fld">Decision</label>
+        <select name="status">{% for s in statuses %}<option value="{{ s }}">{{ s }}</option>{% endfor %}</select></div>
+      <div class="field"><label class="fld">Note</label><textarea name="note" rows="3" placeholder="Rationale, evidence checked…"></textarea></div>
+      <div class="field"><label class="fld">Reviewer</label><input class="input" name="reviewer" value="analyst"></div>
+      <button class="btn primary" type="submit">Save review</button>
+    </form>
+    {% else %}<div class="empty">Nothing to review on this tender.</div>{% endif %}
+  </div>
+</div>
+
+<div class="section">
+  {{ m.section_head("", "Documents") }}
+  {% if docs %}
+  <div class="card muted" style="font-size:13px">
+    These files are hosted on the Bihar eProcurement portal and open only through its own
+    document viewer — a direct link returns “Unauthorized access.” To read them,
+    <a href="https://eproc2.bihar.gov.in/EPSV2Web/openarea/tenderListingPage.action" target="_blank" rel="noopener noreferrer" style="color:var(--info)">open the portal ↗</a>
+    and search Tender/RFQ ID <b style="color:var(--text)">{{ t.org_tender_id or t.tender_id }}</b>{% if t.ref_no %} · Ref {{ t.ref_no }}{% endif %}.
+  </div>
+  {% endif %}
+  <div class="table-wrap">
+    <table class="tbl"><thead><tr><th>Label</th><th>File</th><th class="r">Size</th></tr></thead><tbody>
+      {% for d in docs %}<tr>
+        <td>{{ d.label }}</td>
+        <td class="muted">{{ d.filename }}</td>
+        <td class="r muted">{{ d.file_size_bytes | filesize }}</td>
+      </tr>{% else %}<tr><td colspan="3" class="empty">No documents recorded.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endblock %}
